@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 export async function addTransaction(formData: FormData) {
   const supabase = await createClient(); const { data } = await supabase.auth.getClaims();
-  const claims = data?.claims; const userId = claims?.sub;
+  const claims = data; const userId = claims?.sub;
   if (!userId) redirect("/login");
   const amount = Number(formData.get("amount")); const type = String(formData.get("transaction_type"));
   const category = String(formData.get("category") || "Other"); const description = String(formData.get("description") || "");
