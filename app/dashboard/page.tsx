@@ -5,7 +5,7 @@ import { addTransaction, signOut } from "./actions";
 const inr = (value: number) => new Intl.NumberFormat("en-IN", { style:"currency", currency:"INR", maximumFractionDigits:2 }).format(value);
 export default async function DashboardPage() {
   const supabase = await createClient(); const { data } = await supabase.auth.getClaims();
-  const claims = data; if (!claims?.sub) redirect("/login");
+  const claims = data?.claims; if (!claims?.sub) redirect("/login");
   const userId = claims.sub; const start = new Date(); start.setDate(1); const monthStart = start.toISOString().slice(0,10);
   const { data: rows, error } = await supabase.from("transactions").select("id,transaction_type,amount,category,description,transaction_date").eq("user_id",userId).order("transaction_date",{ascending:false}).limit(100);
   if (error) throw new Error(error.message); const transactions = rows ?? []; const monthRows = transactions.filter(t => t.transaction_date >= monthStart);
