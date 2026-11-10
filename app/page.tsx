@@ -3,6 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 export default async function Home() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
-  const claims = data;
+  const claims = data?.claims;
   redirect(claims ? "/dashboard" : "/login");
 }
