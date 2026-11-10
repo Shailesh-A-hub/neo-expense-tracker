@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     },
   });
   const { data } = await supabase.auth.getClaims();
-  const claims = data;
+  const claims = data?.claims;
   if (!claims && request.nextUrl.pathname.startsWith("/dashboard")) {
     const url = request.nextUrl.clone(); url.pathname = "/login"; return NextResponse.redirect(url);
   }
