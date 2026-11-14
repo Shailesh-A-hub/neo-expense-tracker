@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from "react";
 import {SafeAreaView,View,Text,TextInput,TouchableOpacity,FlatList,Alert,ActivityIndicator,KeyboardAvoidingView,Platform} from "react-native";
 import {StatusBar} from "expo-status-bar";
+import NetInfo from "@react-native-community/netinfo";
 import {supabase} from "./src/supabase";
 import {initLocal,listLocal,saveLocal,removeLocal,queued,markSynced,mergeRemote,clearUserLocal} from "./src/local";
 
@@ -36,6 +37,7 @@ export default function App(){
    setRows(listLocal(userId));
  };
  useEffect(()=>{if(session?.user?.id){refresh(session.user.id);sync(session.user.id);}else setRows([]);},[session?.user?.id]);
+ useEffect(()=>{const unsub=NetInfo.addEventListener(state=>{if(state.isConnected&&session?.user?.id)sync(session.user.id);});return()=>unsub();},[session?.user?.id]);
  const signIn=async()=>{if(!supabase)return Alert.alert("Configuration needed","Set the Supabase URL and publishable key in mobile/.env.");setBusy(true);const {error}=await supabase.auth.signInWithPassword({email:email.trim(),password});setBusy(false);if(error)Alert.alert("Sign in failed",error.message);};
  const signUp=async()=>{if(!supabase)return Alert.alert("Configuration needed","Set the Supabase URL and publishable key in mobile/.env.");setBusy(true);const {error}=await supabase.auth.signUp({email:email.trim(),password});setBusy(false);if(error)Alert.alert("Sign up failed",error.message);else Alert.alert("Check your email","Confirm your email if confirmation is enabled, then sign in.");};
  const add=()=>{const n=Number(amount);if(!n||n<=0)return Alert.alert("Invalid amount","Enter an amount greater than zero.");const tx={id:makeId(),user_id:session.user.id,transaction_type:kind,amount:n,category:category.trim()||"Other",description:description.trim(),transaction_date:today(),created_at:new Date().toISOString(),pending:1};saveLocal(tx);setRows(listLocal(session.user.id));setAmount("");setDescription("");sync(session.user.id);};
