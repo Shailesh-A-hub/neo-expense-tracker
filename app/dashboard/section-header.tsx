@@ -1,0 +1,3 @@
+import { ReactNode } from "react";
+import Nav from "./nav";
+export default function SectionHeader({title,subtitle,children}:{title:string;subtitle:string;children?:ReactNode}){return <><header className="topbar"><a className="brand" href="/dashboard"><span className="brand-icon">N</span><span>neo<span className="brand-dot">.</span></span></a><div className="top-actions">{children}</div></header><div className="dashboard-wrap"><Nav/><div className="page-heading"><div><p className="eyebrow">NEO FINANCE</p><h1>{title}</h1><p className="muted">{subtitle}</p></div></div></div></>}
