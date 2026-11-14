@@ -1,6 +1,6 @@
-# Neo Expense Tracker — Android offline-first app
+# Monetra — Android offline-first app
 
-This is the native Android companion to the existing Neo Expense Tracker website. It uses Expo / React Native, Supabase Auth and SQLite.
+This is the native Android companion to the existing Monetra website. It uses Expo / React Native, Supabase Auth and SQLite.
 
 ## Current mobile scope
 - Email/password sign-in and account creation using the existing Supabase Auth project.
