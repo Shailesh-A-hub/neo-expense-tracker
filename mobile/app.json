@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Neo Expense Tracker",
+    "name": "Monetra",
     "slug": "-neo-expense-tracker",
     "owner": "shaileshwithpowers-team",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "android": {
       "package": "com.neo.expensetracker",
-      "versionCode": 2
+      "versionCode": 3
     },
     "plugins": [
       "expo-sqlite"
