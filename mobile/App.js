@@ -5,7 +5,6 @@ import {supabase} from "./src/supabase";
 import {initLocal,listLocal,saveLocal,removeLocal,queued,markSynced,mergeRemote,clearUserLocal} from "./src/local";
 
 const C={bg:"#101827",panel:"#1B2738",field:"#243247",gold:"#D6B56D",text:"#F5F7FA",muted:"#9EADBF",green:"#75D49A",red:"#FF8585",line:"#34445A"};
-const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
 const today=()=>new Date().toISOString().slice(0,10);
 function Button({label,onPress,secondary=false}){return <TouchableOpacity onPress={onPress} style={{backgroundColor:secondary?C.field:C.gold,padding:14,borderRadius:12,alignItems:"center",marginTop:12}}><Text style={{color:secondary?C.text:"#101827",fontWeight:"800"}}>{label}</Text></TouchableOpacity>}
 function Field({label,value,onChangeText,placeholder,secure=false,keyboardType="default"}){return <View style={{marginTop:12}}><Text style={{color:C.muted,marginBottom:6,fontSize:12}}>{label}</Text><TextInput value={value} onChangeText={onChangeText} placeholder={placeholder||label} placeholderTextColor="#718096" secureTextEntry={secure} keyboardType={keyboardType} autoCapitalize="none" style={{backgroundColor:C.field,color:C.text,padding:13,borderRadius:10,borderWidth:1,borderColor:C.line}}/></View>}
