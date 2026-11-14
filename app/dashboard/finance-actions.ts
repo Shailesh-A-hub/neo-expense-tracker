@@ -33,3 +33,19 @@ export async function recordAssetSale(f:FormData){
  if(error)throw new Error(error.message);
  revalidatePath("/portfolio");revalidatePath("/reports");
 }
+
+export async function refreshMetalRates(){
+ const {supabase,userId}=await userClient();
+ const symbols=["XAU","XAG","XPT"] as const;
+ const [fxRes,...metalResponses]=await Promise.all([
+  fetch("https://api.frankfurter.app/latest?from=USD&to=INR",{next:{revalidate:300},signal:AbortSignal.timeout(10000)}),
+  ...symbols.map(symbol=>fetch("https://api.gold-api.com/price/"+symbol,{next:{revalidate:60},signal:AbortSignal.timeout(10000)}))
+ ]);
+ if(!fxRes.ok||metalResponses.some(r=>!r.ok))throw new Error("Live metal rates are temporarily unavailable. Please try again later.");
+ const fxJson=await fxRes.json();const usdInr=Number(fxJson?.rates?.INR);
+ if(!Number.isFinite(usdInr)||usdInr<=0)throw new Error("Could not retrieve the USD/INR conversion rate.");
+ const mapped=[{asset_type:"gold",symbol:"XAU"},{asset_type:"silver",symbol:"XAG"},{asset_type:"platinum",symbol:"XPT"}];
+ const rates=await Promise.all(metalResponses.map(async(response,i)=>{const body=await response.json();const usdPerOunce=Number(body?.price);if(!Number.isFinite(usdPerOunce)||usdPerOunce<=0)throw new Error("Invalid live quote for "+mapped[i].asset_type);return {user_id:userId,asset_type:mapped[i].asset_type,unit:"g",rate_per_unit:usdPerOunce*usdInr/31.1034768,currency:"INR",rate_date:new Date().toISOString().slice(0,10),source:"api"};}));
+ const {error}=await supabase.from("asset_rates").insert(rates);if(error)throw new Error(error.message);
+ revalidatePath("/portfolio");
+}
