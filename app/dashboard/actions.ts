@@ -14,3 +14,14 @@ export async function addTransaction(formData: FormData) {
   if (error) throw new Error(error.message); revalidatePath("/dashboard");
 }
 export async function signOut() { const supabase = await createClient(); await supabase.auth.signOut(); redirect("/login"); }
+export async function deleteTransaction(formData: FormData) {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) redirect("/login");
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  const { error } = await supabase.from("transactions").delete().eq("id", id).eq("user_id", userId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/dashboard"); revalidatePath("/transactions"); revalidatePath("/reports"); revalidatePath("/budgets");
+}
