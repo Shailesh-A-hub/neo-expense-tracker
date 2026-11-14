@@ -16,3 +16,20 @@ export async function saveRate(f:FormData){const {supabase,userId}=await userCli
 export async function deleteAsset(f:FormData){const {supabase}=await userClient();const {error}=await supabase.from("asset_lots").delete().eq("id",val(f,"id"));if(error)throw new Error(error.message);revalidatePath("/portfolio");}
 export async function saveLiability(f:FormData){const {supabase,userId}=await userClient();const name=val(f,"name"),outstanding_amount=num(f,"outstanding_amount");if(!name||outstanding_amount<0)return;const {error}=await supabase.from("liabilities").insert({user_id:userId,name,liability_type:val(f,"liability_type")||"other",outstanding_amount,interest_rate:val(f,"interest_rate")?num(f,"interest_rate"):null,due_date:val(f,"due_date")||null,notes:val(f,"notes")||null});if(error)throw new Error(error.message);revalidatePath("/liabilities");}
 export async function deleteLiability(f:FormData){const {supabase}=await userClient();const {error}=await supabase.from("liabilities").delete().eq("id",val(f,"id"));if(error)throw new Error(error.message);revalidatePath("/liabilities");}
+
+export async function recordAssetSale(f:FormData){
+ const {supabase,userId}=await userClient();
+ const lotId=val(f,"asset_lot_id"),quantity=num(f,"quantity"),proceeds=num(f,"proceeds");
+ if(!lotId||quantity<=0||proceeds<0)return;
+ const {data:lot,error:lotError}=await supabase.from("asset_lots").select("id,quantity,purchase_total").eq("id",lotId).eq("user_id",userId).single();
+ if(lotError||!lot)throw new Error("Asset holding not found.");
+ const {data:sales,error:salesError}=await supabase.from("asset_disposals").select("quantity").eq("asset_lot_id",lotId).eq("user_id",userId);
+ if(salesError)throw new Error(salesError.message);
+ const alreadySold=(sales??[]).reduce((a,x)=>a+Number(x.quantity),0);
+ const remaining=Number(lot.quantity)-alreadySold;
+ if(quantity>remaining+1e-9)throw new Error("Sale quantity exceeds the remaining holding.");
+ const cost_basis=Number(lot.purchase_total)*quantity/Number(lot.quantity);
+ const {error}=await supabase.from("asset_disposals").insert({user_id:userId,asset_lot_id:lotId,quantity,proceeds,cost_basis,disposal_date:date(f,"disposal_date"),notes:val(f,"notes")||null});
+ if(error)throw new Error(error.message);
+ revalidatePath("/portfolio");revalidatePath("/reports");
+}
