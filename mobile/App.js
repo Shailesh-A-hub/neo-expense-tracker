@@ -42,7 +42,7 @@ export default function App(){
  const signUp=async()=>{if(!supabase)return Alert.alert("Configuration needed","Set the Supabase URL and publishable key in mobile/.env.");setBusy(true);const {error}=await supabase.auth.signUp({email:email.trim(),password});setBusy(false);if(error)Alert.alert("Sign up failed",error.message);else Alert.alert("Check your email","Confirm your email if confirmation is enabled, then sign in.");};
  const add=()=>{const n=Number(amount);if(!n||n<=0)return Alert.alert("Invalid amount","Enter an amount greater than zero.");const tx={id:makeId(),user_id:session.user.id,transaction_type:kind,amount:n,category:category.trim()||"Other",description:description.trim(),transaction_date:today(),created_at:new Date().toISOString(),pending:1};saveLocal(tx);setRows(listLocal(session.user.id));setAmount("");setDescription("");sync(session.user.id);};
  const del=(id)=>Alert.alert("Delete transaction?","This change will sync when you are online.",[{text:"Cancel"},{text:"Delete",style:"destructive",onPress:()=>{removeLocal(id,session.user.id);setRows(listLocal(session.user.id));sync(session.user.id);}}]);
- const signOut=async()=>{clearUserLocal(session.user.id);await supabase?.auth.signOut();setRows([]);};
+ const signOut=async()=>{await supabase?.auth.signOut();setRows([]);};
  const totalIncome=rows.filter(x=>x.transaction_type==="income").reduce((a,x)=>a+Number(x.amount),0);
  const totalExpense=rows.filter(x=>x.transaction_type==="expense").reduce((a,x)=>a+Number(x.amount),0);
  if(boot)return <SafeAreaView style={{flex:1,backgroundColor:C.bg,justifyContent:"center"}}><ActivityIndicator color={C.gold}/></SafeAreaView>;
