@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { LayoutDashboard, ReceiptText, Target, PiggyBank, Gem, CreditCard, ChartNoAxesCombined } from "lucide-react";
+const items=[["/dashboard","Overview",LayoutDashboard],["/transactions","Transactions",ReceiptText],["/budgets","Budgets",PiggyBank],["/goals","Savings goals",Target],["/portfolio","Assets",Gem],["/liabilities","Liabilities",CreditCard],["/reports","Reports",ChartNoAxesCombined]] as const;
+export default function Nav(){return <nav className="main-nav">{items.map(([href,label,Icon])=><Link key={href} href={href}><Icon size={16}/><span>{label}</span></Link>)}</nav>}
