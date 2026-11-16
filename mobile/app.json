@@ -3,12 +3,16 @@
     "name": "Monetra",
     "slug": "-neo-expense-tracker",
     "owner": "shaileshwithpowers-team",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "android": {
       "package": "com.neo.expensetracker",
-      "versionCode": 3
+      "versionCode": 4,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/monetra-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "plugins": [
       "expo-sqlite"
@@ -17,6 +21,7 @@
       "eas": {
         "projectId": "7795f5a4-0c2c-4a79-9272-179038f75dd8"
       }
-    }
+    },
+    "icon": "./assets/monetra-icon.png"
   }
 }
